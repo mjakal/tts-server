@@ -22,6 +22,23 @@ $(document).ready(function () {
         });
     });
 
+    // Stop reading api
+    $('#stopReading').on('click', function (event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: "/api/v1/stop",
+            method: 'GET',
+            data: {},
+            success: function (data) {
+                console.log('Success!');
+            },
+            error: function (error) {
+                console.log('API request failed.');
+            }
+        });
+    });
+
     // Get the list of installed voices api
     $.ajax({
         url: "/api/v1/voices",

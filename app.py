@@ -1,16 +1,61 @@
 import pyttsx
 from flask import Flask, render_template, request, jsonify, g
 
+# Global variables
+PORT = 3000
+DEBUG = True
+STATUS = { "is_reading": False }
+# Instance of Flask app
 app = Flask(__name__)
 
 
 # Get pyttsx engine instance
 def get_engine():
     engine = getattr(g, '_engine', None)
+    voices = getattr(g, '_voices', None)
+
     if engine is None:
         engine = g._engine = pyttsx.init()
+        voices = g._voices = engine.getProperty('voices')
+        
+    tts = {
+        "engine": engine,
+        "voices": voices
+    }
     
-    return engine
+    return tts
+
+
+def on_tts_start(name):
+    STATUS["is_reading"] = True
+    # ENGINE["is_reading"] = True
+    print 'start reading'
+
+
+def on_tts_end(name, completed):
+   STATUS["is_reading"] = False
+   # ENGINE["is_reading"] = False
+   print 'end reading'
+
+
+@app.before_first_request
+def run_before_first_request():
+    tts = get_engine()
+    engine = tts["engine"]
+    
+    '''
+    engine = ENGINE["engine"]
+
+    if engine is None:
+        engine = ENGINE["engine"] = pyttsx.init()
+        ENGINE["voices"] = engine.getProperty('voices')
+    '''
+        
+    engine.connect('started-utterance', on_tts_start)
+    engine.connect('finished-utterance', on_tts_end)
+
+    engine.say("")
+    engine.runAndWait()
 
 
 # Get index page
@@ -22,13 +67,13 @@ def index():
 # Get voices api
 @app.route('/api/v1/voices')
 def get_tts_voices():
-    engine = get_engine()
-    voices = engine.getProperty('voices')
+    tts = get_engine()
+    voices = tts["voices"]
+    
+    # voices = ENGINE["voices"]
+
     voice_names = []
     
-    engine.say("")
-    engine.runAndWait()
-
     for voice in voices:
         voice_names.append(voice.name)
     
@@ -37,18 +82,36 @@ def get_tts_voices():
 
 # Speak text api
 @app.route('/api/v1/speak', methods=["POST"])
-def speak():
+def api_speak():
     voice_data = request.form["voice"]
     text_data = request.form["text"]
-
+    
     if voice_data and text_data:
-        engine = get_engine()
-        voices = engine.getProperty('voices')
+        tts = get_engine()
+        
+        engine = tts["engine"]
+        voices = tts["voices"]
+        
+        '''
+        engine = ENGINE["engine"]
+        voices = ENGINE["voices"]
+        '''
+
+        status = STATUS["is_reading"]
+
+        print "status on request", status
+
+        if status:
+            print "break function works"
+            return jsonify({'error': 'engine already running.'})
 
         for voice in voices:
             if voice.name == voice_data:
                 engine.setProperty('voice', voice.id)
                 break
+
+        engine.connect('started-utterance', on_tts_start)
+        engine.connect('finished-utterance', on_tts_end)
 
         engine.say(text_data)
         engine.runAndWait()
@@ -58,5 +121,15 @@ def speak():
     return jsonify({'error': 'missing data'})
 
 
+# Speak text api
+@app.route('/api/v1/stop')
+def api_stop():
+    tts = get_engine()
+    engine = tts["engine"]
+    engine.stop()
+
+    return jsonify({'success': 'reading stopped'})
+
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=3000)
+    app.run(debug=DEBUG, host="0.0.0.0", port=PORT)
