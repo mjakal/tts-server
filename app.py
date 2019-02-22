@@ -28,28 +28,16 @@ def get_engine():
 
 def on_tts_start(name):
     STATUS["is_reading"] = True
-    # ENGINE["is_reading"] = True
-    print 'start reading'
 
 
 def on_tts_end(name, completed):
    STATUS["is_reading"] = False
-   # ENGINE["is_reading"] = False
-   print 'end reading'
 
 
 @app.before_first_request
 def run_before_first_request():
     tts = get_engine()
     engine = tts["engine"]
-    
-    '''
-    engine = ENGINE["engine"]
-
-    if engine is None:
-        engine = ENGINE["engine"] = pyttsx.init()
-        ENGINE["voices"] = engine.getProperty('voices')
-    '''
         
     engine.connect('started-utterance', on_tts_start)
     engine.connect('finished-utterance', on_tts_end)
@@ -66,12 +54,9 @@ def index():
 
 # Get voices api
 @app.route('/api/v1/voices')
-def get_tts_voices():
+def get_request_voices():
     tts = get_engine()
     voices = tts["voices"]
-    
-    # voices = ENGINE["voices"]
-
     voice_names = []
     
     for voice in voices:
@@ -82,28 +67,21 @@ def get_tts_voices():
 
 # Speak text api
 @app.route('/api/v1/speak', methods=["POST"])
-def api_speak():
+def post_request_speak():
     voice_data = request.form["voice"]
     text_data = request.form["text"]
     
     if voice_data and text_data:
         tts = get_engine()
-        
         engine = tts["engine"]
         voices = tts["voices"]
         
-        '''
-        engine = ENGINE["engine"]
-        voices = ENGINE["voices"]
-        '''
-
         status = STATUS["is_reading"]
 
         print "status on request", status
 
         if status:
-            print "break function works"
-            return jsonify({'error': 'engine already running.'})
+            return jsonify({'error': 'TTS engine already running.'})
 
         for voice in voices:
             if voice.name == voice_data:
@@ -123,7 +101,7 @@ def api_speak():
 
 # Speak text api
 @app.route('/api/v1/stop')
-def api_stop():
+def get_request_stop():
     tts = get_engine()
     engine = tts["engine"]
     engine.stop()
