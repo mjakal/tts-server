@@ -42,10 +42,10 @@ def speak_text(voice = "", text = "", rate = DEFAULT_RATE):
     voices = engine.getProperty('voices')
     rate = int(rate)
     
-    status = STATUS["busy"]
+    engine_busy = STATUS["busy"]
 
     # Check if tts engine is busy
-    if status:
+    if engine_busy:
         return
 
     # Set voice
@@ -53,6 +53,7 @@ def speak_text(voice = "", text = "", rate = DEFAULT_RATE):
         for item in voices:
             if item.name == voice:
                 voice_id = item.id
+                
                 engine.setProperty('voice', voice_id)
                 break
 
