@@ -1,4 +1,5 @@
 import pyttsx
+from time import sleep
 
 # Default speech rate - you can edit this value
 DEFAULT_RATE = 180
@@ -19,6 +20,7 @@ def on_tts_start(name):
 
 # Set busy flag to False on utterance end
 def on_tts_end(name, completed):
+   sleep(0.5) # We have to give pyttsx some space to successfully reinitialize
    STATUS["busy"] = False
 
 

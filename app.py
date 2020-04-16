@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from tts import get_tts_voices, speak_text, stop_speaking
 
 # Global variables
-PORT = 3000
+PORT = 4000
 DEBUG = False
 
 # Instance of Flask app

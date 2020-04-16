@@ -49,24 +49,24 @@ python app.py
 
 And thats it. Now you can check if everything went well by opening your browser and visiting this url.
 
-[http://localhost:3000](http://localhost:3000)
+[http://localhost:4000](http://localhost:4000)
 
 ## TTS Server API
 
 GET Request - list all SAPI voices
 
 ```
-curl http://localhost:3000/api/v1/voices
+curl http://localhost:4000/api/v1/voices
 ```
 
 POST Request - Speak text params: (data: { voice: "Voice Name", text: "Some Text" })
 
 ```
-curl http://localhost:3000/api/v1/speak -d"voice=Microsoft Mary&text=Test this app"
+curl http://localhost:4000/api/v1/speak -d"voice=Microsoft Mary&text=Test this app"
 ```
 
 GET Request - Stop reading
 
 ```
-curl http://localhost:3000/api/v1/stop
+curl http://localhost:4000/api/v1/stop
 ```
