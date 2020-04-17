@@ -13,6 +13,11 @@ def get_engine():
     return engine
 
 
+# Get status of tts engine busy or not
+def get_engine_status():
+    return STATUS
+
+
 # Set busy flag to True on utterance start
 def on_tts_start(name):
     STATUS["busy"] = True

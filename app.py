@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from tts import get_tts_voices, speak_text, stop_speaking
+from tts import get_tts_voices, get_engine_status, speak_text, stop_speaking
 
 # Global variables
 PORT = 4000
@@ -31,15 +31,21 @@ def get_request_voices():
 # Speak text api
 @app.route('/api/v1/speak', methods=["POST"])
 def post_request_speak():
-    voice_data = request.form["voice"]
-    text_data = request.form["text"]
+    voice_data = request.form.get("voice", "")
+    text_data = request.form.get("text", None)
     
     if text_data:
+        engine_status = get_engine_status()
+
+        # Check if tts engine is currently in use
+        if engine_status["busy"]:
+            return jsonify({'warning': 'Engine currently busy, please wait...'})
+        
         speak_text(voice_data, text_data)
 
-        return jsonify({'success': 'valid data'})
+        return jsonify({'success': 'reading text'})
     
-    return jsonify({'error': 'missing data'})
+    return jsonify({'error': 'Text param not set.'})
 
 
 # Speak text api
