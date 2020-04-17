@@ -24,8 +24,7 @@ python --version
 Console output should be similar to this
 
 ```
-Python 2.7.15
-0105:fixme:msvcrt:__clean_type_info_names_internal (0x1e2719e0) stub
+Python 2.7.x
 ```
 
 Open a new terminal window and navigate to tts WINEPREFIX drive_c folder.
@@ -50,6 +49,39 @@ python app.py
 And thats it. Now you can check if everything went well by opening your browser and visiting this url.
 
 [http://localhost:4000](http://localhost:4000)
+
+## How to use it
+
+I also included couple of handy shell scripts to help you interact with tts server from your linux system. In order to use them, make sure you have xclip installed on your system.
+
+```
+sudo apt-get install xclip
+```
+
+Shell scripts are located in /scripts folder.
+
+* start.sh - starts the tts server. (If you have a different path to WINEPREFIX, change the start.sh location variable.)
+* say.sh - speak text, you can set voice name as a script param (e.g. ./say.sh "voice name")
+* stop.sh - stop reading text
+
+You can also configure scripts to run by pressing hotkey. 
+
+Copy/paste say.sh, stop.sh scripts from the repo to your /home/scripts folder and run these commands:
+
+```
+chmod +x say.sh
+chmod +x stop.sh
+```
+
+1. On Ubuntu, open start menu, type in Keyboard and open the app.
+2. Select Shortcuts tab and on the left hand side chose Custom shortcuts
+3. Click on Add custom shortcut button
+4. Enter a name then under Command, enter the script location. See the example below.
+
+```
+sh /home/(your_user_name)/scripts/say.sh 'voice name'
+sh /home/(your_user_name)/scripts/stop.sh
+```
 
 ## TTS Server API
 
